@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Navbar</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="AudiencesTable.html">Аудитории</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="ClassTable.html">Занятия</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="LecturerTable.html">Преподаватели</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <input type="date" name="calendar"min="2022-11-10" onchange='eventForm(this.value)'/>
+
+    <div class="Date"></div>
+    <div class="ClassTable" name="ClassTable" id="ClassTable">
+
+    </div>
+
+
+    <!-- <table class="table" name="table" id="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Фамилия</th>
+                <th scope="col">Имя</th>
+                <th scope="col">Отчество</th>
+            </tr>
+        </thead>
+        <tbody id="tbody">
+            <tr>
+            </tr>
+        </tbody>
+    </table> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script>
+        function eventForm(value) 
+        {
+            var day32 = new Date(value);
+            var year = day32.getFullYear();
+            var month = day32.getMonth()+1;
+            var day = day32.getDate();
+            var table = $("#ClassTable")
+            var time = $("Time")
+
+            $.ajax
+            (
+                {
+                    url:'https://localhost:7224/Class/Index',
+                    type:"POST",
+                    data: JSON.stringify({year,month, day}),
+
+                    contentType:"application/json",
+                    dataType:"json",
+                    success: function (answer) 
+                    {
+                        var timeId = (-1);
+                        document.querySelector("div.Date").innerText = "Дата: "+day+"."+month+"."+year;
+                        console.log(answer)
+                        for (var i = 0, leni = answer.length; i < leni; i++) 
+                        {
+                            console.log(answer[i].timetableOfClasses.id+" | "+timeId)
+                            if(answer[i].timetableOfClasses.id != timeId)
+                            {
+                                if(timeId!=(-1) || i==answer.length) {
+                                    console.log("fd")
+                                    table.append(tablec)
+                                }
+                                timeId=answer[i].timetableOfClasses.id;
+                                table.append('<h1> Время: ' + answer[i].timetableOfClasses.timeStart + '-'+answer[i].timetableOfClasses.timeEnd +'</h1>');
+                                var tablec = $('<table class="table" name="table" id="table">')
+                                //table.append('<table class="table" name="table" id="table">')
+                                    var thead = $('<thead>')
+                                    var tr = $("<tr>")
+                                    tr.append("<th scope='col'>#</th><th scope='col'>Группа</th><th scope='col'>Аудитория</th><th scope='col'>Преподаватель</th>")
+                                    tablec.append(thead.append(tr))
+                                    
+                                    var tbody = $("<tbody id='tbody'>")
+                                    var trd = $("<tr>")
+                                    trd.append("<th scope='row'>" + i + "</th><td>" + answer[i].nameGroup + "</td><td>" + answer[i].audiences.number + "</td><td>" + answer[i].lecturer.surName+" "+answer[i].lecturer.name+" "+answer[i].lecturer.patronymic+ "</td></tr></tbody>")
+                                    tablec.append(tbody.append(trd))
+                            }
+                            else{
+                                var tbody = $("<tbody id='tbody'>")
+                                    var trd = $("<tr>")
+                                    trd.append("<th scope='row'>" + i + "</th><td>" + answer[i].nameGroup + "</td><td>" + answer[i].audiences.number + "</td><td>" + answer[i].lecturer.surName+" "+answer[i].lecturer.name+" "+answer[i].lecturer.patronymic+ "</td></tr></tbody>")
+                                    tablec.append(tbody.append(trd))
+                            }
+                            table.append(tablec)
+                            console.log("len"+answer.length)
+                            
+                        }
+                    }
+                    
+                }
+            )
+        }
+    </script>
+</body>
+</html>
